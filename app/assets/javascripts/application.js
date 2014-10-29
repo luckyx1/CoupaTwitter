@@ -12,6 +12,4 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require tweet.js
-//= require user.js
 //= require_tree .

@@ -1,11 +1,44 @@
 source 'http://rubygems.org'
+ruby '2.1.2'
 
-gem 'rails', '3.0.10'
-
-# Bundle edge Rails instead:
-# gem 'rails', :git => 'git://github.com/rails/rails.git'
+gem 'rails', '3.2.19'
 
 gem 'mysql2', '~> 0.2.11'
+
+
+
+# Use jquery as the JavaScript library
+gem 'jquery-rails'
+# Turbolinks makes following links in your web application faster. Read more: https://github.com/rails/turbolinks
+gem 'jquery-turbolinks'
+#for protecting people's privacy, generates hash
+gem "bcrypt"
+
+gem 'pronto-rubocop'
+
+
+group :development do 
+  gem 'better_errors'
+  gem 'binding_of_caller'
+  gem 'meta_request'
+  gem 'simple_form'
+end
+
+group :test do
+  gem 'database_cleaner' # to clear Cucumber's test database between runs, only needed in testing
+  gem 'selenium-webdriver' #for js testing
+  gem 'cucumber-rails', :require => false
+  gem 'cucumber-rails-training-wheels'
+  gem 'factory_girl_rails'
+  gem 'capybara'         # lets Cucumber pretend to be a web browser
+  gem 'rspec-rails'
+end
+
+group :assets do
+  # Use Uglifier as compressor for JavaScript assets
+  gem 'uglifier', '>= 1.3.0'
+  # Use CoffeeScript for .js.coffee assets and views
+end 
 
 # Use unicorn as the web server
 # gem 'unicorn'
