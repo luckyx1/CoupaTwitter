@@ -15,6 +15,7 @@ gem 'jquery-turbolinks'
 gem "bcrypt"
 
 gem 'pronto-rubocop'
+gem  'rubocop'
 
 
 group :development do 

@@ -230,6 +230,7 @@ DEPENDENCIES
   pronto-rubocop
   rails (= 3.2.19)
   rspec-rails
+  rubocop
   selenium-webdriver
   simple_form
   uglifier (>= 1.3.0)
