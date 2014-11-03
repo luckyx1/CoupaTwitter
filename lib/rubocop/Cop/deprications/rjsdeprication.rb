@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module deprications
+    module Deprications
       class Rjsdeprication < Cop
         #node.loc.expression.source
 
@@ -11,9 +11,10 @@ module RuboCop
           if method_name.to_s.include? 'render'
             #p arg.last.loc.expression
             msg = "caught"
-            add_offense(node,
-                      :expression,
-                      msg)
+            add_offense(node, :expression, msg)
           end
         end
+      end
+    end
   end
+end
