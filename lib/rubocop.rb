@@ -3,4 +3,5 @@
 require 'rubocop'
 
 # cops
-require './lib/rubocop/cop/ThreeOne/find_by.rb'
+require './lib/rubocop/cop/deprications/dynamic_finder.rb'
+require './lib/rubocop/cop/deprications/rjsdeprication.rb'

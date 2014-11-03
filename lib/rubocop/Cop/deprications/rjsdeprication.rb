@@ -2,18 +2,19 @@
 
 module RuboCop
   module Cop
-    module deprications
+    module Deprications
       class Rjsdeprication < Cop
-        #node.loc.expression.source
-
+        MSG = "The `render :update` has been replaced with `respond_to |format|`. Please use the latter"
         def on_send(node)
           _receiver, method_name, *_args = *node
           if method_name.to_s.include? 'render'
-            #p arg.last.loc.expression
-            msg = "caught"
-            add_offense(node,
-                      :expression,
-                      msg)
+            val = _args.last.loc.expression.source.to_s 
+            if val.include? 'update'
+              add_offense(node, :expression, MSG)
+            end
           end
         end
+      end
+    end
   end
+end
