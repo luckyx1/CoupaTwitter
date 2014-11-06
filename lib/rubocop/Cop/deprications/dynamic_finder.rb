@@ -4,11 +4,17 @@ module RuboCop
   module Cop
     module Deprications
       class DynamicFinder < Cop
-        #node.loc.expression.source
+        #this cop looks for the following deprications:    
+          #find_all_by_... => where(...)
+          #find_by_... => where(...).first
+          #find_last_by_... => where(...).last
+          #scoped_by_... => where(...)
+          #find_or_initialize_by_... => find_or_initialize_by(...)
+          #find_or_create_by_... => find_or_create_by(...)
 
         def on_send(node)
           _receiver, method_name, *_args = *node
-          if ((depricated_method(method_name) && (depricated_condition(method_name))) || (method_name.to_s.include? 'scoped'))
+          if ((depricated_method(method_name) && (depricated_condition(method_name))) || (method_name.to_s.include? 'scoped') || (method_name.to_s.include? 'find_by'))
             val = method_name.to_s
             img = '[Please use the latter](http://img3.wikia.nocookie.net/__cb20120514130731/clubpenguin/images/5/5f/Red_X.png)'
             if ((val.include? '_all_') || (val.include? 'scoped_by'))
@@ -19,6 +25,8 @@ module RuboCop
               msg = '`%s` should be replaced with `find_or_create_by(%s)`.' + img
             elsif (val.include? 'last')
               msg = '`%s` should be replaced with `where(%s).last`.' + img
+            elsif val.include? 'find_by'
+              msg = '`%s` should be replaced with `where(%s).first`.' + img
             end
             add_offense(node,:expression,format(msg, method_name, format_elm(method_name)))
           end             
