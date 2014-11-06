@@ -9,4 +9,12 @@ class TweetsController < ApplicationController
   			page.replace_html 'details', :partial => 'details', :locals => {:obj => @fire}
 		end
 	end
+
+	def mail_me
+		Notifier.deliver_signup_notification(recipient)
+	end
+
+	def mail_you
+		  message = Notifier.create_signup_notification(recipient)
+	end
 end

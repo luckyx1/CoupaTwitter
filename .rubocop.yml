@@ -8,6 +8,7 @@ AllCops:
   Exclude:
     - 'lib/**/*'
     - 'db/**/*'
+    - 'test/**/*'
     - 'config/**/*'
     - 'script/**/*'
     - !ruby/regexp /old_and_unused\.rb$/
