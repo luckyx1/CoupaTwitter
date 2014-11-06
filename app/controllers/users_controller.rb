@@ -31,8 +31,9 @@ class UsersController < ApplicationController
       if @user.save!
         redirect_to '/index', :notice => "Account successfully added"
       else
-		redirect_to '/new', :notice => "something went wrong..."        
+		    redirect_to '/new', :notice => "something went wrong..."        
       end
+    end
   end
 
   # PATCH/PUT /users/1
