@@ -5,4 +5,4 @@ require 'rubocop'
 # cops
 require './lib/rubocop/cop/deprications/dynamic_finder.rb'
 require './lib/rubocop/cop/deprications/rjsdeprication.rb'
-require './lib/rubocop/cop/deprications/depmail.rb'
+#require './lib/rubocop/cop/deprications/depmail.rb'
