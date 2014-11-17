@@ -4,6 +4,8 @@ class UsersController < ApplicationController
   # GET /users.json
   def index
       @users = User.all
+      gmessage = Notifier.signup_notification(recipient)
+      gmessage.deliver
   end
 
   # GET /users/1
@@ -15,6 +17,8 @@ class UsersController < ApplicationController
   # GET /users/new
   def new
     @user = User.new
+    message = Yotifier.create_signup_notification(recipient)
+    Yotifier.deliver(message)
   end
 
   # GET /users/1/edit
