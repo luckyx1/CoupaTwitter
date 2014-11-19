@@ -2,7 +2,7 @@
 
 module RuboCop
   module Cop
-    module Deprications
+    module Deprecation
       class DynamicFinder < Cop
         #this cop looks for the following deprications:    
           #find_all_by_... => where(...)
@@ -15,21 +15,22 @@ module RuboCop
         def on_send(node)
           _receiver, method_name, *_args = *node
           if depricated_method(method_name)
-            img = '![Please use the latter](https://s3.amazonaws.com/uploads.hipchat.com/2002/863140/7yq7CsQBM13f7qt/4TbKy6xLc.png)'
+            img = '![Please use the latter](https://s3.amazonaws.com/uploads.hipchat.com/2002/1324433/oipBBjO8xGvDZmP/x.png)'
+            warning_msg = 'DEPRECATION WARNING: Dynamic finders are deprecated in Rails >= 4.0.'
             val = method_name.to_s
             case val
                when /all/ 
-                 msg = "#{img} `%s` should be replaced with `where(%s: ...)`. " 
+                 msg = "#{img} #{warning_msg} Replace `%s` with `where(%s: ...)`. " 
                when /initialize/
-                 msg = "#{img} `%s` should be replaced with `find_or_initialize_by(%s :...)`. "
+                 msg = "#{img} #{warning_msg} Replace `%s` with `find_or_initialize_by(%s :...)`. "
                when /create/
-                 msg = "#{img} `%s` should be replaced with `find_or_create_by(%s : ...)`. "
+                 msg = "#{img} #{warning_msg} Replace `%s` with `find_or_create_by(%s : ...)`. "
                when /last/
-                 msg = "#{img} `%s` should be replaced with `where(%s: ...).last`. "
+                 msg = "#{img} #{warning_msg} Replace `%s` with `where(%s: ...).last`. "
                when /find_by/
-                msg = "#{img} `%s` should be replaced with `where(%s: ...).first`. "
+                msg = "#{img} #{warning_msg} Replace `%s` with `where(%s: ...).first`. "
                when /scoped_by/
-                  msg = "#{img} `%s` should be replaced with `where(%s: ...)`. "
+                  msg = "#{img} #{warning_msg} Replace `%s` with `where(%s: ...)`. "
             end
             add_offense(node,:expression,format(msg, method_name, format_elm(method_name)))
           end             
@@ -37,7 +38,7 @@ module RuboCop
           
 
         def depricated_method(elm)
-          return (elm.to_s =~ /find/) ||  (elm.to_s =~ /scope/)
+          return (((elm.to_s =~ /find/) && (elm.to_s =~ /by/))||  (elm.to_s =~ /scoped_by/))
         end
 
         def format_elm(elm)
@@ -54,4 +55,3 @@ module RuboCop
     end
   end
 end
-

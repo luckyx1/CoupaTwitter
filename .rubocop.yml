@@ -1,14 +1,8 @@
-require:
- - ./lib/rubocop.rb
-
-AllCops:
-  Include:
-    - '**/Rakefile'
-    - '**/config.ru'
+ require: 
+  - "./lib/rubocop.rb"
+AllCops: 
   Exclude:
-    - 'lib/**/*'
-    - 'db/**/*'
-    - 'test/**/*'
-    - 'config/**/*'
-    - 'script/**/*'
-    - !ruby/regexp /old_and_unused\.rb$/
+   
+  Include: 
+    - "**/Rakefile"
+    - "**/config.ru"

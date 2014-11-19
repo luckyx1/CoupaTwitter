@@ -4,18 +4,20 @@ module RuboCop
   module Cop
     module Deprications
       class Rjsdeprication < Cop
-        img = '![Please use the latter](https://s3.amazonaws.com/uploads.hipchat.com/2002/863140/7yq7CsQBM13f7qt/4TbKy6xLc.png)'
-        MSG = "#{img} The `render :update` has been replaced with `respond_to |format|`." 
+        img = '![Please use the latter](https://s3.amazonaws.com/uploads.hipchat.com/2002/1324433/oipBBjO8xGvDZmP/x.png)'
+        MSG = "#{img} `DEPRECATION WARNING: RJS is no longer supported.` Replace `render :update` with `respond_to do |format|`." 
         def on_send(node)
           _receiver, method_name, *_args = *node
-          if method_name.to_s.include? 'render'
+          if method_name.to_s =~ /render/
+            return if ((_args.empty?) || (_args.last == nil))
             val = _args.last.loc.expression.source.to_s 
-            if val.include? 'update'
+            if val =~ /update/
               add_offense(node, :expression, MSG)
             end
           end
         end
-      end
+      end 
     end
   end
 end
+

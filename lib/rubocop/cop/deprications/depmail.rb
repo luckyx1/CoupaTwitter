@@ -4,10 +4,63 @@ module RuboCop
   module Cop
     module Deprications
       # an image to appear as a red x on github comments
-      img = '[Please use the latter](http://img3.wikia.nocookie.net/__cb20120514130731/clubpenguin/images/5/5f/Red_X.png)'
+      IMG = '![Please use the latter](https://s3.amazonaws.com/uploads.hipchat.com/2002/1324433/oipBBjO8xGvDZmP/x.png)'
       class Depmail < Cop
-        attr_accessor :arr
-        #this class trys to format your mailer to go from the top ... 
+        MSG = '`mail(:to => '', :subject => '' , ...)`'
+        #find all instances of mailer
+        def on_class(node)
+          _name, _superclass, body = *node
+          if (_superclass != nil) && (_superclass.loc.expression.source.to_s =~ /Mailer/ )
+            check_def(node)
+          end
+        end
+        #~~~~~~~~~~~~~~~~~
+        # Notifier.deliver_signup_notification(recipient)
+        # =>
+        # Notifier.signup_notification(recipient).deliver
+        #looks for all methods that contain the 'deliver_' and updates for Rails 4.0
+        def on_send(node)
+          _receiver, method_name, *_args = *node
+          #if this is a call from a model/mailer(the current way to verify if coming from mailer)
+          if (method_name.to_s =~ /deliver_/) 
+            name = _receiver.loc.expression.source.to_s
+            if (name && is_capital(name))
+              msg = "`#{name}`.#{mail_format(method_name.to_s)}`(..).deliver`"
+              add_offense(node, :expression, "#{IMG} DEPRECATION WARNING: Replace #{name}.#{method_name}(..) to: "+ msg)
+            end
+          elsif (method_name.to_s =~/deliver/)
+            name = _receiver.loc.expression.source.to_s
+            if (name && is_capital(name))
+              add_offense(node, :expression, "#{IMG} DEPRECATION WARNING: It appears you constructed a Mailer and then passed the message. Please make an instance of the model, and then call deliver on it")
+            end
+
+            
+          # elsif (not name.include? '_create_') && (name.include? 'create_')
+          #   #p method_name
+          #   receiver = '`'+_receiver.loc.expression.source.to_s+'`'
+          #   msg = receiver+ '.'+mail_format(method_name)
+          #   add_offense(node, :expression, "Please replace mailer with the following format: "+ msg)
+          # elsif name.include? 'deliver'
+
+          end
+              
+        end
+
+        private
+
+        def is_capital(elm)
+          cap = elm.capitalize
+          return elm[0] == cap[0]
+        end
+
+        #to grab the args correctly
+        def mail_format(elm)
+          i = elm.index('_')
+          return elm[i+1,elm.size]
+        end
+
+        #~~~~~
+        #this class trys to format your mailer for Rails 4.0 format
 
         #  class Notifier < ActionMailer::Base
         #   def signup_notification(recipient)
@@ -27,63 +80,6 @@ module RuboCop
         #   end
         # end
 
-        
-        MSG = '`mail(:to => '', :subject => '' , ...)` instead'
-        #find all instances of mailer
-        def on_class(node)
-          _name, _superclass, body = *node
-          if _superclass.loc.expression.source.to_s.include? 'Mailer'
-            check_def(node)
-          end
-        end
-
-        #Todo: walking up the parent tree only goes to controller, there should be a way to keep track of all the classes before
-        #searching up instead
-
-        #~~~~~~~~~~~~~~~~~
-        # Notifier.deliver_signup_notification(recipient)
-        # =>
-        # Notifier.signup_notification(recipient).deliver
-
-        #looks for all methods that contain the 'deliver_' and switch them to the correct form
-        def on_send(node)
-          _receiver, method_name, *_args = *node
-          name = method_name.to_s
-          #letter = .chars.first
-          #capital = letter.match(/\p{Lower}/)
-          #if this is a call from a model/mailer(the current way to verify if coming from mailer)
-          if (name.include? 'deliver_') 
-            rec = _receiver.loc.expression.source.to_s
-            if is_capital(rec)
-              receiver = '`'+rec+'`'
-              msg = receiver+ '.'+mail_format(method_name)+'`().deliver`'
-              add_offense(node, :expression, "Please replace mailer with the following format: "+ msg)
-            end
-          elsif (not name.include? '_create_') && (name.include? 'create_')
-            #p method_name
-            receiver = '`'+_receiver.loc.expression.source.to_s+'`'
-            msg = receiver+ '.'+mail_format(method_name)
-            add_offense(node, :expression, "Please replace mailer with the following format: "+ msg)
-          elsif name.include? 'deliver'
-
-          end
-              
-        end
-
-        private
-
-        def is_capital(elm)
-          elm.chars.first
-          elm..match(/\p{Lower}/) == nil
-        end
-
-        #to grab the args correctly
-        def mail_format(elm)
-          val = elm.to_s
-          i = val.index('_')
-          return val[i+1,val.size]
-        end
-
 
         #walk through the ast node
         def check_def(node)
@@ -94,7 +90,7 @@ module RuboCop
         end
         # walking through the body
         def check_begin(node)
-          elm = node.children.compact.select{|n| n if n.class.to_s.include? 'Astrolabe' }
+          elm = node.children.compact.select{|n| n if n.class.to_s =~ /Astrolabe/ }
           elm.each do |i|
             check_send(i) if i.type.to_s == 'begin'
           end
@@ -105,22 +101,17 @@ module RuboCop
           body = node.children.compact.select{|n| n.type == :send }
           check = false
           body.each do |r|
-            check = check_body(r)
+            if check_body(r)
+              check = true
+              break
+            end
           end
-          if check
-            add_offense(node, :expression, "Please replace mailer with the following format: "+ MSG)
-          end
-          #add_offense(_body, :name, message(method_name, m_args))
+          add_offense(node, :expression, "#{IMG} DEPRECATION WARNING: Replace your mailer with the following form: "+ MSG) if !check
         end
 
         #if mail function not found, its an old version
         def check_body(node)
-          node.children.compact.each do|i|
-            if i.class == Symbol && i != :mail
-              return true
-            end
-          end
-          false
+          node.children.compact.include?(:mail)
         end
 
       end
