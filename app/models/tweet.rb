@@ -1,6 +1,6 @@
 class Tweet < ActiveRecord::Base
-  attr_accessible :message
-  belongs_to :user
+   attr_accessible :message
+   belongs_to :user
    named_scope :active, :conditions => {:active => true}, :order => "created_at desc"
    named_scope :my_active, lambda { |user| {:conditions => ["user_id = ? and active = ?", user.id, true], :order => "created_at desc"} }
    default_scope :order => "id DESC"
